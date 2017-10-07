@@ -7,3 +7,9 @@ it new data where it had previously had problems.
 zTrainSeq01.h5 (trained on MyDatazTurnHardCorner01)
 For this run, I trained on data where the car was turning the sharp right where the lake was in front.
 
+zTrainSeq02.h5 (trained on MyDatazTurnHardCorner02)
+Same training location as in zTrainSeq01.h5, but in a slightly different orientation.
+
+zTrainSeq03.h5 (trained on MyDatazTurnHardCorner03)
+Same training location as in zTrainSeq01.h5, with different orientation.
+
