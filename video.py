@@ -1,6 +1,8 @@
-from moviepy.editor import ImageSequenceClip
+import imageio
+# if there is an error associated with not having ffmpeg, uncomment the following line and let it download it.
+# imageio.plugins.ffmpeg.download()
 import argparse
-
+from moviepy.editor import ImageSequenceClip
 
 def main():
     parser = argparse.ArgumentParser(description='Create driving video.')
