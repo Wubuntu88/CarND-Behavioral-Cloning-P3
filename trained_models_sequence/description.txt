@@ -1,0 +1,9 @@
+Here is a description of the steps I took to train my model multiples times after the first big training.
+
+I first trained with around 7 data runs, and came up with a model that did pretty well.
+I chose to use that model and retrain it several times in sequence.  Each time I did the training, I would only show
+it new data where it had previously had problems.
+
+zTrainSeq01.h5 (trained on MyDatazTurnHardCorner01)
+For this run, I trained on data where the car was turning the sharp right where the lake was in front.
+
