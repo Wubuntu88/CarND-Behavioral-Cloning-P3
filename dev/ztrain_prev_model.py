@@ -1,7 +1,18 @@
 from dev.loader_generator import load_data_samples, generator
 from sklearn.model_selection import train_test_split
 from keras.models import load_model
-from dev.nvidia_trainer_generator import train_nvidia
+
+'''
+In this file, I load a previously trained network, and train it on new data.
+The benefit of this is that we can choose a model that turned out well, and then refine it.
+I refine it by noticing the problem spots (where the car drives off the road),
+and then collect data of myself driving that section of road, but with the desired behavior.
+I then load the model, load the data from that specific run, and train the model only on that data.
+This training fixes some of the problems that it was previously having, although sometimes it seems that the
+model learns frustratingly slow.  One thing to note is that this kind of training can also make the model
+perform worse on certain sections of the road it had previously been good at.
+However, my experience is that it certainly gives more benefits than consequences.
+'''
 
 training_file_name = '../MyDatazTurnHardCorner03/driving_log.csv'
 load_model_path = '../trained_models_sequence/zTrainSeq02.h5'
