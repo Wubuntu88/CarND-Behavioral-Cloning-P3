@@ -1,8 +1,8 @@
 # **Behavioral Cloning**
 
-## Writeup Template
+## Writeup Submission
 
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
+###  This Document summarizes my work in the behavioural cloning project.
 
 ---
 
@@ -34,45 +34,82 @@ The goals / steps of this project are the following:
 
 #### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
-My project includes the following files:
-* model.py containing the script to create and train the model
+My project files that relate to my neural network and data loading are all in the dev folder.
+
+#### Project files
+* dev/loader_generator.py - The file that loads the data, and provides the generator that will fetch training data on demand for the neural network.
+* dev/nvidia_trainer_generator.py - The file that creates the nvidia neural network model and history object.
+* dev/ztrain_nvidia_generator.py - The file that loads the data, sets up the neural network to the trained, and saves the model.
+* dev/ztrain_prev_model.py - A file that will load a previously saved network, and retrain the network with new training data, and save that new network to a new file.
+
+My project also contains several trained models.  The files with Seq in their names means that they were derived in sequence by training a pretrained network.  They are in the 'trained_models_sequence' folder.
+#### The base network
+* **nvidia_model_new_model_pretty_good.h5** - This is the base convolution neural network from which the other networks were trained in sequence.
+#### Subsequently trained networks:
+* **zTrainSeq01.h5** - The first network trained in sequence.
+* **zTrainSeq01.h5** - The second network trained in sequence.
+* **zTrainSeq01.h5** - The final network that looped the track without falling off.
+
+My project also contains the following files provided by udacity:
 * drive.py for driving the car in autonomous mode
-* model.h5 containing a trained convolution neural network 
+* video.py for creating a video from the pictures that the drive.py creates.
 * writeup_submission.md, summarizing the results (which is this document)
 
-#### 2. Submission includes functional code
+#### 2. Functional Code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
 ```sh
-python drive.py model.h5
+python drive.py trained_models_sequence/zTrainSeq03.h5 videos/your_run
 ```
+This will create a your pictures in the videos/your_run folder.  Note that the simulator must be running in autonomous mode and you must exit the simulator when you wish to stop the recording.
 
-#### 3. Submission code is usable and readable
+The .mp4 file can be generated using hte video.py file can be run with the following bash command:
+```sh
+python video.py videos/your_run
+```
+This command will save a video named your_run.mp4 in the same hierarchy as where the your_run directory lived (in the videos directory). 
 
-The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
+#### 3. Description of code for usability, understandability, and readability.
+
+__ztrain_nvidia_model.py__ - 
+To train my network, one can use the ztrain_nvidia_model.py in the dev folder.  It loads the data, initializes the generators, trains the network, and saves the file.  
+It loads the data from the '../zAggregateData/AllDataLocations/all_data.csv' file.  I did not include my data because it is massive and cannot go on github.  
+The simulator saves data locations in the driving_log.csv file, so if one wanted to train a new model on new simulator data, one could save it in the '../zAggregateData/AllDataLocations/' location and add the 'driving_log.csv' to the path ending.
+(Note that I did some tricks to load all data from various runs, which is why my final folder name is all_data.csv and not driving_log.csv).
+
+The __train_nvidia_model.py__ file uses the **loader_generator.py** and **nvidia_trainer_generator** files.
+
+**loader_generator.py** loads the data and initialize the generators.
+
+**nvidia_trainer_generator** constructs the model object to be trained.
 
 ### Model Architecture and Training Strategy
 
 #### 1. An appropriate model architecture has been employed
 
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
-
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
+I experimented with three different architechtures: the initial regression architechture given by udacity, the lenet architecture, and the nvidia architecture.
+I ended up using the nvidia architecture because it seemed to show the best results.
 
 #### 2. Attempts to reduce overfitting in the model
 
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
+To reduce over fitting, I performed two measures:
+* collect lots of training data, and collect training data specifically on the locations that the car ran off the track on.
+* I modified the nvidia architecture to include dropout layers after each convolutional layer or dense layer.
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+Both measures were effective.  Collecting data specifically on problem spots was very helpful.  The reason this step can be considered reducing overfitting is that the model had been trained without enough of the data on problem spots, so it was being trained in such a way that it did not account enough for this data to give accurate steering values.
+
+Adding the dropout layers helped significantly in terms of the car staying on the road.  The training with dropout ended with validation loss that was higher than without dropout.  This is expected, because with some probability, the network will not update certain weights.  However, the car performed exceptionally better, staying in the middle of the road, not swerving, not running off the road as much.  I was quite shocked that using dropout had such a significant effect.  I used a drop probability of 50%.
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+The model used an adam optimizer, which adjusts the learning rate during training.
 
 #### 4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
-
-For details about how I created the training data, see the next section. 
+I used many runs to create a large training data set.  Some runs had the car travel down the center of the road; and on some runs I hugged the side of the road.
+In retrospect, I should have had many examples of the vehicle correcting, meaning it would start at a position almost off the road and correct to be at center.
+I also collected good data on the specific difficult locations.  For example, I collected several short runs where the car avoids the dirt road.
+More data was collected after the first model was built to correct some problems the model was having.  
+This additional data specifically addressed more problem spots where the car was going off the road.
 
 ### Model Architecture and Training Strategy
 
