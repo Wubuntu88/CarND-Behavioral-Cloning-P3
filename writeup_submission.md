@@ -2,6 +2,8 @@
 
 ## Writeup Submission
 
+### By William Gillespie
+
 ###  This Document summarizes my work in the behavioural cloning project.
 
 ---
@@ -33,10 +35,10 @@ The goals / steps of this project are the following:
 My project files that relate to my neural network and data loading are all in the dev folder.
 
 #### Project files
-* dev/loader_generator.py - The file that loads the data, and provides the generator that will fetch training data on demand for the neural network.
-* dev/nvidia_trainer_generator.py - The file that creates the nvidia neural network model and history object.
-* dev/ztrain_nvidia_generator.py - The file that loads the data, sets up the neural network to the trained, and saves the model.
-* dev/ztrain_prev_model.py - A file that will load a previously saved network, and retrain the network with new training data, and save that new network to a new file.
+* __dev/loader_generator.py__ - The file that loads the data, and provides the generator that will fetch training data on demand for the neural network.
+* __dev/nvidia_trainer_generator.py__ - The file that creates the nvidia neural network model and history object.
+* __dev/ztrain_nvidia_generator.py__ - The file that loads the data, sets up the neural network to the trained, and saves the model.
+* __dev/ztrain_prev_model.py__ - A file that will load a previously saved network, and retrain the network with new training data, and save that new network to a new file.
 
 My project also contains several trained models.  The files with Seq in their names means that they were derived in sequence by training a pretrained network.  They are in the 'trained_models_sequence' folder.
 #### The base network
@@ -47,18 +49,20 @@ My project also contains several trained models.  The files with Seq in their na
 * **zTrainSeq01.h5** - The final network that looped the track without falling off.
 
 My project also contains the following files provided by udacity:
-* drive.py for driving the car in autonomous mode
-* video.py for creating a video from the pictures that the drive.py creates.
-* writeup_submission.md, summarizing the results (which is this document)
+* __drive.py__ for driving the car in autonomous mode
+* __video.py__ for creating a video from the pictures that the drive.py creates.
+
+#### Final Report
+* __writeup_submission.md__ - summarizes the results (which is this document)
 
 #### 2. Functional Code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
 ```sh
 python drive.py trained_models_sequence/zTrainSeq03.h5 videos/your_run
 ```
-This will create a your pictures in the videos/your_run folder.  Note that the simulator must be running in autonomous mode and you must exit the simulator when you wish to stop the recording.
+This will create a your pictures in the videos/your_run folder.  Note that the simulator must be running in autonomous mode and you must stop the drive.py when you wish to stop the recording.
 
-The .mp4 file can be generated using hte video.py file can be run with the following bash command:
+The .mp4 file can be generated using the video.py file can be run with the following bash command:
 ```sh
 python video.py videos/your_run
 ```
@@ -72,11 +76,11 @@ It loads the data from the '../zAggregateData/AllDataLocations/all_data.csv' fil
 The simulator saves data locations in the driving_log.csv file, so if one wanted to train a new model on new simulator data, one could save it in the '../zAggregateData/AllDataLocations/' location and add the 'driving_log.csv' to the path ending.
 (Note that I did some tricks to load all data from various runs, which is why my final folder name is all_data.csv and not driving_log.csv).
 
-The __train_nvidia_model.py__ file uses the **loader_generator.py** and **nvidia_trainer_generator** files.
+The __train_nvidia_model.py__ file uses the **loader_generator.py** and **nvidia_trainer_generator.py** files.
 
 **loader_generator.py** loads the data and initialize the generators.
 
-**nvidia_trainer_generator** constructs the model object to be trained.
+**nvidia_trainer_generator.py** constructs the model object to be trained.
 
 ### Model Architecture and Training Strategy
 
@@ -88,7 +92,7 @@ I ended up using the nvidia architecture because it seemed to show the best resu
 #### 2. Attempts to reduce overfitting in the model
 
 To reduce over fitting, I performed two measures:
-* collect lots of training data, and collect training data specifically on the locations that the car ran off the track on.
+* I collected plenty of training data, and collected training data specifically on the locations that the car ran off the track on.
 * I modified the nvidia architecture to include dropout layers after each convolutional layer or dense layer.
 
 Both measures were effective.  Collecting data specifically on problem spots was very helpful.  The reason this step can be considered reducing overfitting is that the model had been trained without enough of the data on problem spots, so it was being trained in such a way that it did not account enough for this data to give accurate steering values.
@@ -111,7 +115,7 @@ This additional data specifically addressed more problem spots where the car was
 
 #### 1. Solution Design Approach
 
-###### Simple Neural Approach (Non-convolutional; kind of like regression)
+##### Simple Neural Approach (Non-convolutional; kind of like regression)
 
 My first step was to setup and run the simple neural network model provided by udacity to test it out and familiarize myself with the process.
 The keras model is shown below:
@@ -134,14 +138,15 @@ The model turned out to make the car swerve left and right too much.
 This could be attributed to bad training data, but I did not have faith in a non-convolutional network, so I decided to quickly move on.
 Here is a gif of the car in action:
 
--- Note: I give links to gifs because embedded gifs are too distracting, and these gifs in particular make one motion sick --
-
 https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/regression_model_run.gif
 
-###### LeNet Model Approach
+-- Note: I give links to gifs because embedded gifs are too distracting, and these gifs in particular make one motion sick --
 
-My second approach was to use the LeNet architecture shown in the udacity tutorial.
+##### LeNet Model Approach
+
+My second approach was to use the LeNet architecture shown in the Udacity tutorial.
 This is how the LeNet Model is in keras:
+
 ```python
 def train_lenet(x_train, y_train, nb_epoch=10):
     model = Sequential()
@@ -181,12 +186,12 @@ def train_lenet(x_train, y_train, nb_epoch=10):
     return model, history
 ```
 
-I tried this model because it was recommended by udacity as being decent enough and I thought it would be a good place to start.
+I tried this model because it was recommended by Udacity as being good and I thought it would be a solid place to start.
 The model from the lenet performed fairly well.  The car drove down the center of the road without swerving.
 It did very well on the 'easy' parts, but failed on some of the hard parts, such as where the car can veer off onto the dirt road,
 or when the car can drive into the side of the bridge.
 In these cases, I did collect more data and train with more data, but I believe I was not focused enough in my data collection.
-Instead of collect data on the problem spot, I would also collect more data on the easy parts.
+Instead of collecting data on the problem spot, I would also collect more data on the easy parts.
 This lead to having a bloated data set with not enough examples of the difficult driving locations.
 I moved on to my new network; at the time I had not realized my mistake, and I wanted to try and see if a better architecture would make the difference.
 If I had trained lenet on better data, perhaps I could have seen its true potential.
@@ -203,7 +208,7 @@ In this section, I augmented the training data in two ways:
 * I flipped the Image and flipped the sign of the steering value.
 * I added the two side cameras and modified the steering value with a correction.
 
-###### Nvidia Architecture Approach
+##### Nvidia Architecture Approach
 
 I used the Nvidia Architecture because Udacity and a member on the forums recommended it.
 The Nvidia architecture looks like the following in keras:
@@ -305,7 +310,7 @@ I will discuss two data preprocessing steps, and show a dispay of the network.
 
 I performed two preprocessing techniques that are visible in the first two layers of the neural network diagram.
 
-1) I mean rescaled the data such that it had a range of \[-0.5, 0.5].
+1) I rescaled the data such that it had a range of \[-0.5, 0.5].
 The pixel values had initially been \[0,255].  This rescaling helps the neural network converge on a solution faster.
 2) I cropped the image such that the top 70 pixels, and the bottom 20 pixels were ignored.  The top area shows information about the sky and trees, and the bottom area mostly is the hood of the car.
 These portions of the image do not provide helpful information at best, and mislead the neural network into picking up patterns that do not really influence steering direction.
@@ -313,7 +318,7 @@ Thus, the picture data fed into the neural network is mostly road-specific.
 
 Both of these steps were done in the Lambda layer of the neural network.  This layer allows us to modify the data without having to run a batch preprocessing job on the raw data.
 
-I also had read from some individuals on the forums that further reshaped their image to be 64x64.
+I also had read from some individuals on the forums who further reshaped their image to be 64x64.
 They claimed this significantly reduced the training time, without degrading the performance.
 I chose not to do this for severals reasons.
 The first of which is that I thought it would be troublesome, and I did not know of a way to do it with a Lambda layer.
@@ -327,7 +332,6 @@ Here is a diagram of the final modified NVIDIA network:
 #### 3. Creation of the Training Set & Training Process
 
 I captured many runs of training data.  I collected around 15 recordings.
-This figure shows
 Some were long, including several laps around the course.  Several were short, being 10 seconds or so.
 A few recording included driving in the center, two had the car hugging each side of the road.
 My training process usually involved training on a given set of records, noticing the failings, and just getting more data.
@@ -381,6 +385,7 @@ However, despite its intransigence, it finally learned to stay on the road durin
 My final model is the zTrainSeq03.h5 in the trained_models_sequence directory.
 
 **A note on training and validation loss**
+
 The training error vs validation loss comparison did not help me determine if the model was overfitting.
 They were both quite similar.  In fact, the loss did not really help me at all.
 A low loss in either the training or validation sets did not give me an indication of how well it would perform on the road.
