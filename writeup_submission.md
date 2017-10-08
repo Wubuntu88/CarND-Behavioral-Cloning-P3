@@ -135,7 +135,8 @@ def train_reg(x_train, y_train):
 The model turned out to make the car swerve left and right too much.
 This could be attributed to bad training data, but I did not have faith in a non-convolutional network, so I decided to quickly move on.
 Here is a gif of the car in action:
-![](https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/regression_model_run.gif)
+--Note: I give links to gifs because embedded gifs are too distracting, and these gifs in particular make one motion sick --
+https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/regression_model_run.gif
 
 
 
