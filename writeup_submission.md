@@ -419,7 +419,7 @@ There are different quantities of data in one run compared to another.
 
 ![histogram of multiple runs][steering_histogram_multiple_datasets]
 
-Note that in both cases, the mean seems to be centered around a negative value close to zero, maybe -0.3.
+Note that in both cases, the mean seems to be centered around a negative value close to zero, maybe -0.03.
 This is because we are looping counter clockwise on the track.  Because this data is of the raw data (not including flipped-sign steering values, or the steering corrected side camera values),
 It is not the distribution of the actual data used for training.
 It does give us a sense of what the steering values are.
