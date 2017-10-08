@@ -18,13 +18,7 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/placeholder.png "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+[nvidia_network]: ./dev/model.png "Model Visualization"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.
@@ -290,42 +284,102 @@ The model performed well, but still had some of the same problems that LeNet did
 One addition I made to the architecture was dropout.  I got this idea because someone had mentioned it on the forums.
 Adding dropout made my model perform much better, much to my surprise.  The car Drove much more smoothly, and did not swerve off the road on the 'easy' parts.
 
-##### Subsequent Training / Transfer Learning
-
---to be continued...
-
 #### 2. Final Model Architecture
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+My final model architecture was the nvidia model with dropout.
+I will discuss two data preprocessing steps, and show a dispay of the network.
 
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
+**Data Pre-processing**
 
-![alt text][image1]
+I performed two preprocessing techniques that are visible in the first two layers of the neural network diagram.
+
+1) I mean rescaled the data such that it had a range of \[-0.5, 0.5].
+The pixel values had initially been \[0,255].  This rescaling helps the neural network converge on a solution faster.
+2) I cropped the image such that the top 70 pixels, and the bottom 20 pixels were ignored.  The top area shows information about the sky and trees, and the bottom area mostly is the hood of the car.
+These portions of the image do not provide helpful information at best, and mislead the neural network into picking up patterns that do not really influence steering direction.
+Thus, the picture data fed into the neural network is mostly road-specific.
+
+Both of these steps were done in the Lambda layer of the neural network.  This layer allows us to modify the data without having to run a batch preprocessing job on the raw data.
+
+I also had read from some individuals on the forums that further reshaped their image to be 64x64.
+They claimed this significantly reduced the training time, without degrading the performance.
+I chose not to do this for severals reasons.
+The first of which is that I thought it would be troublesome, and I did not know of a way to do it with a Lambda layer.
+Also, my training was slow, but not unbearably slow.
+I was using an NVIDIA GTX 750 Ti, which completed my training in anywhere from 5 to 15 minutes, depending on the number of epochs.
+
+Here is a diagram of the final modified NVIDIA network:
+
+![alt text][nvidia_network]
 
 #### 3. Creation of the Training Set & Training Process
 
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
+I captured many runs of training data.  I collected around 15 recordings.
+This figure shows
+Some were long, including several laps around the course.  Several were short, being 10 seconds or so.
+A few recording included driving in the center, two had the car hugging each side of the road.
+My training process usually involved training on a given set of records, noticing the failings, and just getting more data.
+This did not bring that much improvement, and dramatically increase my training time.
+I began creating multiple short recording of problems spots.  
+The helped significantly, and helped me overcome cases where the car would make errors repeatedly.
+Multiple runs of the same configuration and training data sometimes yielded better or worse models.
+I got several models that were good enough, and saved them for later reference.
 
-![alt text][image2]
+I became frustrated with the inconsistency of the neural network training, so I decided to switch my approach.
+Instead of starting from scratch every time, I decided I would choose a 'good' model that I had saved and retrain it on select data of problem spots.
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
+I chose the 'nvidia_model_new_model_pretty_good.h5' in the trained_models_sequence directory because it performed well.
+I figured out how to load a model, train it on new data, and save a new model so the old one was perserved.
 
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
+The code for training a previously trained network in in dev/ztrain_prev_model.py.  I list the code here:
+```python
+from dev.loader_generator import load_data_samples, generator
+from sklearn.model_selection import train_test_split
+from keras.models import load_model
 
-Then I repeated this process on track two in order to get more data points.
+training_file_name = '../MyDatazTurnHardCorner03/driving_log.csv'
+load_model_path = '../trained_models_sequence/zTrainSeq02.h5'
+save_model_path = '../trained_models_sequence/zTrainSeq03.h5'
 
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
+samples = load_data_samples(path_to_csv_file=training_file_name)
 
-![alt text][image6]
-![alt text][image7]
+train_samples, validation_samples = train_test_split(samples, test_size=0.2)
 
-Etc ....
+model = load_model(load_model_path)
 
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+batch_size = 64
+train_generator = generator(train_samples, batch_size=batch_size, side_cameras=False)
+validation_generator = generator(validation_samples, batch_size=batch_size, side_cameras=False)
 
 
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
+model.fit_generator(generator=train_generator,
+                    samples_per_epoch=len(train_samples),
+                    validation_data=validation_generator,
+                    nb_val_samples=len(validation_samples),
+                    nb_epoch=10)
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+model.save(save_model_path)
+```
+
+I ended up training the original model an additional three times.  Each time I built on the previously trained model.
+I used the same trouble spot training data for all three runs.
+For some reason, the network had significant difficulty learning this step.
+The location I am referring to is the curve right after the dirt road.
+However, despite its intransigence, it finally learned to stay on the road during this section - but just barely.
+My final model is the zTrainSeq03.h5 in the trained_models_sequence directory.
+
+**A note on training and validation loss**
+The training error vs validation loss comparison did not help me determine if the model was overfitting.
+They were both quite similar.  In fact, the loss did not really help me at all.
+A low loss in either the training or validation sets did not give me an indication of how well it would perform on the road.
+
+**The video**
+Here is a link to where the video of the full lap of driving is:
+
+**GIF:**
+https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/nvidia_model_run.gif
+
+**MP4:**
+https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/nvidia_model_run.mp4
+
+(note: if you download the video in firefox, it may say that the mimetype is not supported; the download worked in Safari)
