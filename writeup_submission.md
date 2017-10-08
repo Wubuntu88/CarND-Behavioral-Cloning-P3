@@ -19,6 +19,8 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 
 [nvidia_network]: ./dev/model.png "Model Visualization"
+[steering_histogram_one_dataset]: ./histograms/one_file_unnormed_historgram.png
+[steering_histogram_multiple_datasets]: ./histograms/multiples_files_normed_histogram.png
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.
@@ -310,7 +312,7 @@ I was using an NVIDIA GTX 750 Ti, which completed my training in anywhere from 5
 
 Here is a diagram of the final modified NVIDIA network:
 
-![alt text][nvidia_network]
+![diagram of the nvidia network][nvidia_network]
 
 #### 3. Creation of the Training Set & Training Process
 
@@ -374,7 +376,7 @@ They were both quite similar.  In fact, the loss did not really help me at all.
 A low loss in either the training or validation sets did not give me an indication of how well it would perform on the road.
 
 **The video**
-Here is a link to where the video of the full lap of driving is:
+Here are links to where the video of the full lap of driving is:
 
 **GIF:**
 https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/nvidia_model_run.gif
@@ -383,3 +385,28 @@ https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/nvid
 https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/nvidia_model_run.mp4
 
 (note: if you download the video in firefox, it may say that the mimetype is not supported; the download worked in Safari)
+
+#### Apendix
+
+##### Distributions of steering values.
+I made histograms of the steering values during multiple runs.
+Negative steering values indicate left turning, and positive steering values indicate right turning.
+It is interesting to see the distributions, so I included it in an appendix.
+
+Here is the distribution of steering values sample data for one run:
+(note that it is not normalized)
+
+![histogram of one sample run][steering_histogram_one_dataset]
+
+Here is the distribution of how multiple runs compare.
+Note that the histogram is normed, so the shape of the distributions are compared.
+There are different quantities of data in one run compared to another.
+
+![histogram of multiple runs][steering_histogram_multiple_datasets]
+
+Note that in both cases, the mean seems to be centered around a negative value close to zero, maybe -0.3.
+This is because we are looping counter clockwise on the track.  Because this data is of the raw data (not including flipped-sign steering values, or the steering corrected side camera values),
+It is not the distribution of the actual data used for training.
+It does give us a sense of what the steering values are.
+It is surprising that there are not more extreme values present.
+Perhaps because they are so infrequent, they do not show up in the histogram.
