@@ -14,7 +14,6 @@ samples = load_data_samples(path_to_csv_file=file_name)
 
 print("-data loaded-")
 
-
 train_samples, validation_samples = train_test_split(samples, test_size=0.4)
 
 batch_size = 128

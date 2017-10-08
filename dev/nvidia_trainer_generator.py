@@ -16,6 +16,16 @@ The car stayed much more centered and did not fly off the road.
 def train_nvidia(train_generator, num_train_samples,
                  validation_generator, num_validation_samples,
                  nb_epoch=10, batch_size=32):
+    """
+    This method is used to get the model to then train.  The history object of the model is also returned.
+    :param train_generator: The generator that fetches the next training data batch.
+    :param num_train_samples: The number of training samples that the generator will eventually fetch.
+    :param validation_generator: The generator that fetches the next validation data batch.
+    :param num_validation_samples: The number of validation data that the validation generator will eventually fetch.
+    :param nb_epoch: The number of epochs that the model will train for.
+    :param batch_size: The batch size of each training mini run.
+    :return: a tuple of 2 items containing (model, history object)
+    """
     dropout_p = 0.5
     model = Sequential()
     model.add(Lambda(lambda x: x / 255.0 - 0.5,
