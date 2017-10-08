@@ -286,6 +286,16 @@ The model performed well, but still had some of the same problems that LeNet did
 One addition I made to the architecture was dropout.  I got this idea because someone had mentioned it on the forums.
 Adding dropout made my model perform much better, much to my surprise.  The car Drove much more smoothly, and did not swerve off the road on the 'easy' parts.
 
+**Addition of Generators**
+
+After maxing out on memory, I created generator functions.
+When I had not been using generator functions, my program would take a significant amount of time simply loading and processing all the data.
+(The actual loading of the data did not take long (the lines of the files), but the processing of the batches would).
+After I made generators, The training would start right away.
+Generators may have made the training last longer in the long run, but they allowed me to train on much more data, and not worry about an Out Of Memory error.
+They also gave me the ability to switch to a lower memory computer than my 32 gigabyte desktop.
+I think generators are really cool functions, and they were a great addition to my project.
+
 #### 2. Final Model Architecture
 
 My final model architecture was the nvidia model with dropout.
