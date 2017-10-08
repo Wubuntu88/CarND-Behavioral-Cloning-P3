@@ -142,11 +142,51 @@ Here is a gif of the car in action:
 
 https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/regression_model_run.gif
 
-###### Simple Neural Approach (Non-convolutional; kind of like regression)
+###### LeNet Model Approach
 
 My second approach was to use the LeNet architecture shown in the udacity tutorial.
-I tried it because it was recommended by udacity as being decent enough and I thought it would be a good place to start.
-The model from the lenet performed fairly well.  It drove down the center of the road without significant swerving.
+This is how the LeNet Model is in keras:
+```python
+def train_lenet(x_train, y_train, nb_epoch=10):
+    model = Sequential()
+    model.add(Lambda(lambda x: x / 255.0 - 0.5,
+                     input_shape=(160, 320, 3)))
+    model.add(layer=Cropping2D(cropping=((70, 20), (0, 0))))
+    # lenet architecture
+    # Convolution #1
+    model.add(layer=Convolution2D(nb_filter=6,
+                                  nb_row=5,
+                                  nb_col=5,
+                                  activation='relu'))
+    # Pooling #1
+    model.add(layer=MaxPooling2D())
+
+    # Convolution #2
+    model.add(layer=Convolution2D(nb_filter=6,
+                                  nb_row=5,
+                                  nb_col=5,
+                                  activation='relu'))
+    # Pooling #2
+    model.add(layer=MaxPooling2D())
+
+    # Flatten into fully connected layers
+    model.add(layer=Flatten())
+    model.add(layer=Dense(120))
+    model.add(layer=Dense(84))
+    model.add(layer=Dense(1))
+
+    model.compile(loss='mse', optimizer='adam')
+    history = model.fit(x=x_train,
+                        y=y_train,
+                        validation_split=0.2,
+                        shuffle=True,
+                        batch_size=256,
+                        nb_epoch=nb_epoch)
+    return model, history
+```
+
+I tried this model because it was recommended by udacity as being decent enough and I thought it would be a good place to start.
+The model from the lenet performed fairly well.  The car drove down the center of the road without swerving.
 It did very well on the 'easy' parts, but failed on some of the hard parts, such as where the car can veer off onto the dirt road,
 or when the car can drive into the side of the bridge.
 In these cases, I did collect more data and train with more data, but I believe I was not focused enough in my data collection.
@@ -158,21 +198,101 @@ In any case, here is an example of lenet performing well:
 
 https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/lenet_run.gif
 
+And a case where it drives off the road:
 
+https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/lenet_offroad.gif
 
-The overall strategy for deriving a model architecture was to ...
+**Augmenting training data:**
+In this section, I augmented the training data in two ways:
+* I flipped the Image and flipped the sign of the steering value.
+* I added the two side cameras and modified the steering value with a correction.
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+###### Nvidia Architecture Approach
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
+I used the Nvidia Architecture because Udacity and a member on the forums recommended it.
+The Nvidia architecture looks like the following in keras:
+```python
+def train_nvidia(train_generator, num_train_samples,
+                 validation_generator, num_validation_samples,
+                 nb_epoch=10, batch_size=32):
+    """
+    This method is used to get the model to then train.  The history object of the model is also returned.
+    :param train_generator: The generator that fetches the next training data batch.
+    :param num_train_samples: The number of training samples that the generator will eventually fetch.
+    :param validation_generator: The generator that fetches the next validation data batch.
+    :param num_validation_samples: The number of validation data that the validation generator will eventually fetch.
+    :param nb_epoch: The number of epochs that the model will train for.
+    :param batch_size: The batch size of each training mini run.
+    :return: a tuple of 2 items containing (model, history object)
+    """
+    dropout_p = 0.5
+    model = Sequential()
+    model.add(Lambda(lambda x: x / 255.0 - 0.5,
+                     input_shape=(160, 320, 3)))
+    model.add(layer=Cropping2D(cropping=((70, 20), (0, 0))))
+    # lenet architecture
+    # Convolution #1
+    model.add(layer=Convolution2D(nb_filter=24,
+                                  nb_row=5,
+                                  nb_col=5,
+                                  subsample=(2, 2),
+                                  activation='relu'))
+    model.add(Dropout(dropout_p))
+    # Convolution #2
+    model.add(layer=Convolution2D(nb_filter=36,
+                                  nb_row=5,
+                                  nb_col=5,
+                                  subsample=(2, 2),
+                                  activation='relu'))
+    model.add(Dropout(dropout_p))
+    # Convolution #3
+    model.add(layer=Convolution2D(nb_filter=48,
+                                  nb_row=5,
+                                  nb_col=5,
+                                  subsample=(2, 2),
+                                  activation='relu'))
+    model.add(Dropout(dropout_p))
+    # Convolution #4
+    model.add(layer=Convolution2D(nb_filter=64,
+                                  nb_row=3,
+                                  nb_col=3,
+                                  activation='relu'))
+    model.add(Dropout(dropout_p))
+    # Convolution #5
+    model.add(layer=Convolution2D(nb_filter=64,
+                                  nb_row=3,
+                                  nb_col=3,
+                                  activation='relu'))
+    model.add(Dropout(dropout_p))
+    # Flatten into fully connected layers
+    model.add(layer=Flatten())
+    model.add(layer=Dense(100))
+    model.add(Dropout(dropout_p))
+    model.add(layer=Dense(50))
+    model.add(Dropout(dropout_p))
+    model.add(layer=Dense(10))
+    model.add(Dropout(dropout_p))
+    model.add(layer=Dense(1))
 
-To combat the overfitting, I modified the model so that ...
+    model.compile(loss='mse', optimizer='adam')
+    history = model.fit_generator(generator=train_generator,
+                                  samples_per_epoch=num_train_samples,
+                                  validation_data=validation_generator,
+                                  nb_val_samples=num_validation_samples,
+                                  nb_epoch=nb_epoch)
+    return model, history
+```
 
-Then I ... 
+The model performed well, but still had some of the same problems that LeNet did.  Also, It drove in a swerving manner, even on the 'easy' parts.
 
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
+**Addition of Dropout**
 
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
+One addition I made to the architecture was dropout.  I got this idea because someone had mentioned it on the forums.
+Adding dropout made my model perform much better, much to my surprise.  The car Drove much more smoothly, and did not swerve off the road on the 'easy' parts.
+
+##### Subsequent Training / Transfer Learning
+
+--to be continued...
 
 #### 2. Final Model Architecture
 
