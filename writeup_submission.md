@@ -115,6 +115,32 @@ This additional data specifically addressed more problem spots where the car was
 
 #### 1. Solution Design Approach
 
+My first step was to setup and run the regression model provided by udacity to test it out and familiarize myself with the process.
+The keras model is shown below:
+```python
+def train_reg(x_train, y_train):
+    model = Sequential()
+    model.add(Lambda(lambda x: x / 255.0 - 0.5,
+                     input_shape=(160, 320, 3)))
+    model.add(Flatten())
+    model.add(Dense(1))
+
+    model.compile(loss='mse', optimizer='adam')
+    history = model.fit(x=x_train,
+                        y=y_train,
+                        validation_split=0.2,
+                        shuffle=True)
+    return model, history
+```
+The model turned out to make the car swerve left and right too much.
+This could be attributed to bad training data, but I did not have faith in a non-convolutional network, so I decided to quickly move on.
+Here is a gif of the car in action:
+![](https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/regression_model_run.gif)
+
+
+
+
+
 The overall strategy for deriving a model architecture was to ...
 
 My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
