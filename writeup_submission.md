@@ -115,7 +115,9 @@ This additional data specifically addressed more problem spots where the car was
 
 #### 1. Solution Design Approach
 
-My first step was to setup and run the regression model provided by udacity to test it out and familiarize myself with the process.
+###### Simple Neural Approach (Non-convolutional; kind of like regression)
+
+My first step was to setup and run the simple neural network model provided by udacity to test it out and familiarize myself with the process.
 The keras model is shown below:
 ```python
 def train_reg(x_train, y_train):
@@ -135,10 +137,26 @@ def train_reg(x_train, y_train):
 The model turned out to make the car swerve left and right too much.
 This could be attributed to bad training data, but I did not have faith in a non-convolutional network, so I decided to quickly move on.
 Here is a gif of the car in action:
---Note: I give links to gifs because embedded gifs are too distracting, and these gifs in particular make one motion sick --
+
+-- Note: I give links to gifs because embedded gifs are too distracting, and these gifs in particular make one motion sick --
+
 https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/regression_model_run.gif
 
+###### Simple Neural Approach (Non-convolutional; kind of like regression)
 
+My second approach was to use the LeNet architecture shown in the udacity tutorial.
+I tried it because it was recommended by udacity as being decent enough and I thought it would be a good place to start.
+The model from the lenet performed fairly well.  It drove down the center of the road without significant swerving.
+It did very well on the 'easy' parts, but failed on some of the hard parts, such as where the car can veer off onto the dirt road,
+or when the car can drive into the side of the bridge.
+In these cases, I did collect more data and train with more data, but I believe I was not focused enough in my data collection.
+Instead of collect data on the problem spot, I would also collect more data on the easy parts.
+This lead to having a bloated data set with not enough examples of the difficult driving locations.
+I moved on to my new network; at the time I had not realized my mistake, and I wanted to try and see if a better architecture would make the difference.
+If I had trained lenet on better data, perhaps I could have seen its true potential.
+In any case, here is an example of lenet performing well:
+
+https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/lenet_run.gif
 
 
 
