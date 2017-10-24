@@ -67,7 +67,7 @@ My project also contains the following files provided by udacity:
 #### 2. Functional Code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
 ```sh
-python drive.py trained_models_sequence/zTrainSeq03.h5 videos/your_run
+python drive.py trained_models_sequence/zTrainAlmostPerfect05.h5 videos/your_run
 ```
 This will create a your pictures in the videos/your_run folder.  Note that the simulator must be running in autonomous mode and you must stop the drive.py when you wish to stop the recording.
 
