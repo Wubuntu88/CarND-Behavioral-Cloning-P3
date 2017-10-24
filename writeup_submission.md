@@ -24,6 +24,12 @@ The goals / steps of this project are the following:
 [steering_histogram_one_dataset]: ./histograms/one_file_unnormed_historgram.png
 [steering_histogram_multiple_datasets]: ./histograms/multiples_files_normed_histogram.png
 
+[center]: ./example_road_pictures/center.jpg
+[bridge]: ./example_road_pictures/bridge.jpg
+[avoid_dirt_road]: ./example_road_pictures/avoid_dirt_road.jpg
+[first_hard_turn]: ./example_road_pictures/first_hard_turn.jpg
+[hard_turn_after_dirt_road]: ./example_road_pictures/hard_turn_after_dirt_road.jpg
+
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.
 
@@ -108,8 +114,30 @@ The model used an adam optimizer, which adjusts the learning rate during trainin
 I used many runs to create a large training data set.  Some runs had the car travel down the center of the road; and on some runs I hugged the side of the road.
 In retrospect, I should have had many examples of the vehicle correcting, meaning it would start at a position almost off the road and correct to be at center.
 I also collected good data on the specific difficult locations.  For example, I collected several short runs where the car avoids the dirt road.
-More data was collected after the first model was built to correct some problems the model was having.  
+More data was collected after the first model was built to correct some problems the model was having.
 This additional data specifically addressed more problem spots where the car was going off the road.
+
+Here are some examples of my training data:
+
+Center Driving:
+
+![center]
+
+On the Bridge:
+
+![bridge]
+
+Navigating the hard turn before the bridge:
+
+![first_hard_turn]
+
+Navigating the sharp turn before the dirt road:
+
+![avoid_dirt_road]
+
+Sharp turn after the dirt road:
+
+![hard_turn_after_dirt_road]
 
 ### Model Architecture and Training Strategy
 
@@ -377,12 +405,12 @@ model.fit_generator(generator=train_generator,
 model.save(save_model_path)
 ```
 
-I ended up training the original model an additional three times.  Each time I built on the previously trained model.
+I ended up training the original model an additional five times.  Each time I built on the previously trained model.
 I used the same trouble spot training data for all three runs.
 For some reason, the network had significant difficulty learning this step.
 The location I am referring to is the curve right after the dirt road.
 However, despite its intransigence, it finally learned to stay on the road during this section - but just barely.
-My final model is the zTrainSeq03.h5 in the trained_models_sequence directory.
+My final model is the zTrainAlmostPerfect5.h5 in the trained_models_sequence directory.
 
 **A note on training and validation loss**
 
@@ -390,14 +418,16 @@ The training error vs validation loss comparison did not help me determine if th
 They were both quite similar.  In fact, the loss did not really help me at all.
 A low loss in either the training or validation sets did not give me an indication of how well it would perform on the road.
 
+## video after Resubmission
+
+My original submission video needed revision because the car went up onto the shoulder.
+This time it does not go up onto the shoulder.
+
 **The video**
 Here are links to where the video of the full lap of driving is:
 
-**GIF:**
-https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/nvidia_model_run.gif
-
 **MP4:**
-https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/nvidia_model_run.mp4
+https://github.com/Wubuntu88/CarND-Behavioral-Cloning-P3/blob/master/videos/nvidia_model_run_02.mp4
 
 (note: if you download the video in firefox, it may say that the mimetype is not supported; the download worked in Safari)
 
