@@ -1,4 +1,7 @@
 
+# I added this to ignore all pycharm metadata files.
+.idea/*
+
 # Created by https://www.gitignore.io/api/python,pycharm
 
 ### PyCharm ###
