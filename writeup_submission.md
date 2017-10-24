@@ -45,17 +45,20 @@ My project files that relate to my neural network and data loading are all in th
 * __dev/nvidia_trainer_generator.py__ - The file that creates the nvidia neural network model and history object.
 * __dev/ztrain_nvidia_generator.py__ - The file that loads the data, sets up the neural network to the trained, and saves the model.
 * __dev/ztrain_prev_model.py__ - A file that will load a previously saved network, and retrain the network with new training data, and save that new network to a new file.
+* __dev/ztrain_prev_model2.py__ - provides the same functionality as ztrain_prev_model.py, but this one does not use a generator function.
 
-My project also contains several trained models.  The files with Seq in their names means that they were derived in sequence by training a pretrained network.  They are in the 'trained_models_sequence' folder.
+My project also contains several trained models.  The files with numbering in their names means that they were derived in sequence by training a pretrained network.  They are in the 'trained_models_sequence' folder.
 #### The base network
 * **nvidia_model_new_model_pretty_good.h5** - This is the base convolution neural network from which the other networks were trained in sequence.
 #### Subsequently trained networks:
-* **zTrainSeq01.h5** - The first network trained in sequence.
-* **zTrainSeq01.h5** - The second network trained in sequence.
-* **zTrainSeq01.h5** - The final network that looped the track without falling off.
+* **zTrainAlmostPerfect.h5** - The first network trained in sequence.
+* **zTrainAlmostPerfect02.h5**
+* **zTrainAlmostPerfect03.h5**
+* **zTrainAlmostPerfect04.h5**
+* **zTrainAlmostPerfect05.h5**- The final network used to drive.
 
 My project also contains the following files provided by udacity:
-* __drive.py__ for driving the car in autonomous mode
+* __drive.py__ for driving the car in autonomous mode (note that I modified this to switch the color channel to BGR).
 * __video.py__ for creating a video from the pictures that the drive.py creates.
 
 #### Final Report
