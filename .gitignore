@@ -1,4 +1,7 @@
 
+# ignoring linux sim foler.
+linux_sim/*
+
 # I added this to ignore all pycharm metadata files.
 .idea/*
 
